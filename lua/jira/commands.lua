@@ -17,8 +17,6 @@ M.setup = function()
 end
 
 function M.jira(object, action, ...)
-  print(vim.inspect(object))
-  print(vim.inspect(action))
   if not object then
     print 'Missing arguments'
     return
@@ -43,7 +41,6 @@ function M.jira(object, action, ...)
 end
 
 function M.view_issue(issue_id)
-  print(vim.inspect(issue_id))
   api_client.get_issue(issue_id, function(err, response)
     if err then
       print('Error: ' .. err)
