@@ -1,3 +1,7 @@
+# Currently a work in progress!
+
+Please follow along with the [initial release discussion](https://github.com/kid-icarus/jira.nvim/discussions/1) for an overview of the project's status.
+
 ## jira.nvim
 
 A neovim interface to Jira.
