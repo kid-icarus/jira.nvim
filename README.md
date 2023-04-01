@@ -1,10 +1,20 @@
-# Currently a work in progress!
-
-Please follow along with the [initial release discussion](https://github.com/kid-icarus/jira.nvim/discussions/1) for an overview of the project's status.
-
-## jira.nvim
+# jira.nvim
 
 A neovim interface to Jira.
+
+## Goals
+
+- Maximalism - an all-encompassing interface to Jira vs. tiny lib.
+- Integration - integrate with popular neovim plugins for an enhanced UX.
+    Telescope, etc.
+
+## Non-goals
+
+Vim compatibility.
+
+## 🚨 Currently a work in progress!
+
+Please follow along with the [initial release discussion](https://github.com/kid-icarus/jira.nvim/discussions/1) for an overview of the project's status.
 
 ## ⚡️ Requirements
 
@@ -20,6 +30,9 @@ use {
   requires = {
     'jcdickinson/http.nvim',
   }
+  config = function ()
+    require'jira'.setup()
+  end
 }
 ```
 
@@ -28,19 +41,27 @@ use {
 First of all, you'll need to create a [personal Jira API
 token](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
 
-There are a few environment variables you'll need to set in order to use the
-plugin:
+By default, jira.nvim is configured a to use few environment variables you'll need to set them or override them in setup order to use the plugin:
 
 - `JIRA_USER` - Your atlassian username
 - `JIRA_API_TOKEN` - Your personal API token 
 - `JIRA_DOMAIN` - The domain of your Jira instance, i.e. `example.atlassian.net`
 
-## Goals
+```lua
+require'jira'.setup({
+  jira_api = {
+    domain = vim.env.JIRA_DOMAIN,
+    username = vim.env.JIRA_USER,
+    token = vim.env.JIRA_API_TOKEN
+  },
+})
+```
 
-- Maximalism - an all-encompassing interface to Jira vs. tiny lib.
-- Integration - integrate with popular neovim plugins for an enhanced UX.
-    Telescope, etc.
+## 🤖 Commands
 
-## Non-goals
+There is only an Jira <object> <action> [arguments] command.
 
-Vim compatibility.
+| Object | Action | Description |
+|---|---|---|
+| issue | view [issue_id] | View the given issue |
+
