@@ -43,7 +43,6 @@ Jira.get_issues = function(issue)
       if response.code < 400 then
         vim.schedule(function()
           local data = vim.fn.json_decode(response.body)
-          P(data.fields.description)
           -- local issue = data.key
           -- local summary = data.fields.summary
           local desc = {}
@@ -54,7 +53,6 @@ Jira.get_issues = function(issue)
               end
             end
           end
-          P(desc)
           -- local status = data.fields.status.name
           -- local assignee = data.fields.assignee.displayName
           -- local reporter = data.fields.reporter.displayName
