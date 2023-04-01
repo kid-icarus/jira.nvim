@@ -1,0 +1,14 @@
+name: Lint and style
+
+on: [push, pull_request]
+
+jobs:
+  stylua:
+    name: stylua
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: JohnnyMorganz/stylua-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --check lua/
