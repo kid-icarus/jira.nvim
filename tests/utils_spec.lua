@@ -209,4 +209,99 @@ describe('convert_adf_to_markdown', function()
     local actual = utils.convert_adf_to_markdown(code_block)
     assert.are.same(expected, actual)
   end)
+
+  it('should convert an ordered list', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'orderedList',
+          attrs = {
+            order = 1,
+          },
+          content = {
+            {
+              type = 'listItem',
+              content = {
+                {
+                  type = 'paragraph',
+                  content = {
+                    {
+                      type = 'text',
+                      text = 'Item 1',
+                    },
+                  },
+                },
+              },
+            },
+            {
+              type = 'listItem',
+              content = {
+                {
+                  type = 'paragraph',
+                  content = {
+                    {
+                      type = 'text',
+                      text = 'Item 2',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+
+    local expected = '1. Item 1\n2. Item 2\n\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should conver a bullet list', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'bulletList',
+          content = {
+            {
+              type = 'listItem',
+              content = {
+                {
+                  type = 'paragraph',
+                  content = {
+                    {
+                      type = 'text',
+                      text = 'Item 1',
+                    },
+                  },
+                },
+              },
+            },
+            {
+              type = 'listItem',
+              content = {
+                {
+                  type = 'paragraph',
+                  content = {
+                    {
+                      type = 'text',
+                      text = 'Item 2',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+
+    local expected = '* Item 1\n* Item 2\n\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
 end)

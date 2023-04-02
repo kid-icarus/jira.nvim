@@ -124,7 +124,14 @@ local function convert_adf_to_markdown(adt)
         for i, v in ipairs(node.content) do
           node_md = node_md .. i .. '. ' .. convert_adf_node_to_markdown(v)
         end
-        return node_md
+        return node_md .. '\n'
+      end,
+      bulletList = function(node)
+        node_md = ''
+        for _, v in ipairs(node.content) do
+          node_md = node_md .. '* ' .. convert_adf_node_to_markdown(v)
+        end
+        return node_md .. '\n'
       end,
     }
 
