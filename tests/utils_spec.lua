@@ -176,7 +176,7 @@ describe('convert_adf_to_markdown', function()
     assert.are.same(expected, actual)
   end)
 
-  it('should convert a blockquote', function()
+  it('should convert a bulletList', function()
     local code_block = {
       version = 1,
       type = 'doc',
@@ -301,6 +301,58 @@ describe('convert_adf_to_markdown', function()
     }
 
     local expected = '* Item 1\n* Item 2\n\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert a task list', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'taskList',
+          content = {
+            {
+              type = 'taskItem',
+              attrs = {
+                state = 'TODO',
+              },
+              content = {
+                {
+                  type = 'paragraph',
+                  content = {
+                    {
+                      type = 'text',
+                      text = 'Item 1',
+                    },
+                  },
+                },
+              },
+            },
+            {
+              type = 'taskItem',
+              attrs = {
+                state = 'DONE',
+              },
+              content = {
+                {
+                  type = 'paragraph',
+                  content = {
+                    {
+                      type = 'text',
+                      text = 'Item 2',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+
+    local expected = '* [ ] Item 1\n* [x] Item 2\n\n'
     local actual = utils.convert_adf_to_markdown(code_block)
     assert.are.same(expected, actual)
   end)

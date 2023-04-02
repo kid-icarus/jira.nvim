@@ -56,6 +56,7 @@ function M.view_issue(issue_id)
         vim.api.nvim_buf_set_option(buf, 'modifiable', true)
         vim.api.nvim_buf_set_lines(buf, 0, -1, true, vim.split(desc, '\n', true))
         vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+        vim.api.nvim_buf_set_option(buf, 'filetype', 'markdown')
         vim.cmd 'vsplit'
         local win = vim.api.nvim_get_current_win()
         vim.api.nvim_win_set_buf(win, buf)
