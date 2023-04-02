@@ -155,6 +155,28 @@ local function convert_adf_to_markdown(adt)
       rule = function()
         return '---\n\n'
       end,
+      -- TODO: handle actual media
+      mediaGroup = function(node)
+        node_md = ''
+        for _, v in ipairs(node.content) do
+          node_md = node_md .. convert_adf_node_to_markdown(v)
+        end
+        return node_md
+      end,
+      mediaSingle = function(node)
+        node_md = ''
+        for _, v in ipairs(node.content) do
+          node_md = node_md .. convert_adf_node_to_markdown(v)
+        end
+        return node_md
+      end,
+      media = function(node)
+        if node.attrs.type == 'link' then
+          return '🔗'
+        else
+          return '📷'
+        end
+      end,
     }
 
     if inline_nodes[adf_node.type] then
