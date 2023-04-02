@@ -1,4 +1,5 @@
 local api_client = require 'jira.api_client'
+local utils = require 'jira.utils'
 local M = {}
 
 M.setup = function()
@@ -49,18 +50,11 @@ function M.view_issue(issue_id)
     if response.code < 400 then
       vim.schedule(function()
         local data = vim.fn.json_decode(response.body)
-        local desc = {}
-        for _, v in ipairs(data.fields.description.content) do
-          for _, v2 in ipairs(v.content) do
-            if v2.type == 'text' then
-              desc[#desc + 1] = v2.text
-            end
-          end
-        end
+        local desc = utils.convert_adf_to_markdown(data.fields.description)
         local buf = vim.api.nvim_create_buf(true, false)
         vim.api.nvim_buf_set_option(buf, 'readonly', false)
         vim.api.nvim_buf_set_option(buf, 'modifiable', true)
-        vim.api.nvim_buf_set_lines(buf, 0, -1, true, desc)
+        vim.api.nvim_buf_set_lines(buf, 0, -1, true, vim.split(desc, '\n', true))
         vim.api.nvim_buf_set_option(buf, 'modifiable', false)
         vim.cmd 'vsplit'
         local win = vim.api.nvim_get_current_win()
