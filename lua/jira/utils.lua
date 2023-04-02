@@ -119,6 +119,13 @@ local function convert_adf_to_markdown(adt)
         end
         return node_md
       end,
+      orderedList = function(node)
+        node_md = ''
+        for i, v in ipairs(node.content) do
+          node_md = node_md .. i .. '. ' .. convert_adf_node_to_markdown(v)
+        end
+        return node_md
+      end,
     }
 
     if inline_nodes[adf_node.type] then
