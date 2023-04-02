@@ -152,24 +152,8 @@ local function convert_adf_to_markdown(adt)
         end
         return node_md .. '\n'
       end,
-      listItem = function(node)
-        node_md = ''
-        for _, v in ipairs(node.content) do
-          node_md = node_md .. convert_adf_node_to_markdown(v)
-        end
-        return node_md
-      end,
-      taskList = function(node)
-        node_md = ''
-        for _, v in ipairs(node.content) do
-          if v.attrs.state == 'DONE' then
-            node_md = node_md .. '* [x] '
-          else
-            node_md = node_md .. '* [ ] '
-          end
-          node_md = node_md .. convert_adf_node_to_markdown(v)
-        end
-        return node_md .. '\n'
+      rule = function()
+        return '---\n\n'
       end,
     }
 
