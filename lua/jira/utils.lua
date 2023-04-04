@@ -181,20 +181,26 @@ local function convert_adf_to_markdown(adt)
 
     if inline_nodes[adf_node.type] then
       -- TODO: handle marks
+      local text_marks = {}
       if adf_node.marks then
         for _, v in ipairs(adf_node.marks) do
-          if v.type == 'strong' then
-            node_md = node_md .. '**' .. adf_node.text .. '**'
+          if v.type == 'link' then
+            return node_md .. '[' .. adf_node.text .. '](' .. v.attrs.href .. ')'
+            -- links cannot have additonal marks, and should always come first
+            -- in the marks array
+          elseif v.type == 'strong' then
+            text_marks[#text_marks + 1] = '**'
           elseif v.type == 'em' then
-            node_md = node_md .. '*' .. adf_node.text .. '*'
+            text_marks[#text_marks + 1] = '*'
           elseif v.type == 'strike' then
-            node_md = node_md .. '~~' .. adf_node.text .. '~~'
+            text_marks[#text_marks + 1] = '~~'
           elseif v.type == 'code' then
-            node_md = node_md .. '`' .. adf_node.text .. '`'
-          elseif v.type == 'link' then
-            node_md = node_md .. '[' .. adf_node.text .. '](' .. v.attrs.href .. ')'
+            text_marks[#text_marks + 1] = '`'
+          elseif v.type == 'underline' then
+            text_marks[#text_marks + 1] = '__'
           end
         end
+        node_md = node_md .. table.concat(text_marks) .. adf_node.text .. table.concat(text_marks):reverse()
       else
         node_md = node_md .. adf_node.text
       end

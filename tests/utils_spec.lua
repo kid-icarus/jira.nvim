@@ -498,4 +498,42 @@ describe('convert_adf_to_markdown', function()
     local actual = utils.convert_adf_to_markdown(code_block)
     assert.are.same(expected, actual)
   end)
+
+  it('should convert multiple marks', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is ',
+            },
+            {
+              type = 'text',
+              text = 'strong and underlined',
+              marks = {
+                {
+                  type = 'strong',
+                },
+                {
+                  type = 'underline',
+                },
+              },
+            },
+            {
+              type = 'text',
+              text = ' text',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is **__strong and underlined__** text\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
 end)
