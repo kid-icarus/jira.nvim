@@ -176,7 +176,7 @@ describe('convert_adf_to_markdown', function()
     assert.are.same(expected, actual)
   end)
 
-  it('should convert a bulletList', function()
+  it('should convert a blockquote', function()
     local code_block = {
       version = 1,
       type = 'doc',
@@ -317,6 +317,184 @@ describe('convert_adf_to_markdown', function()
     }
 
     local expected = '---\n\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert strong text', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is ',
+            },
+            {
+              type = 'text',
+              text = 'strong',
+              marks = {
+                {
+                  type = 'strong',
+                },
+              },
+            },
+            {
+              type = 'text',
+              text = ' text',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is **strong** text\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert em text', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is ',
+            },
+            {
+              type = 'text',
+              text = 'emphasized',
+              marks = {
+                {
+                  type = 'em',
+                },
+              },
+            },
+            {
+              type = 'text',
+              text = ' text',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is *emphasized* text\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert code text', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is ',
+            },
+            {
+              type = 'text',
+              text = 'code',
+              marks = {
+                {
+                  type = 'code',
+                },
+              },
+            },
+            {
+              type = 'text',
+              text = ' text',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is `code` text\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert a link', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is a ',
+            },
+            {
+              type = 'text',
+              text = 'link',
+              marks = {
+                {
+                  type = 'link',
+                  attrs = {
+                    href = 'https://www.google.com',
+                  },
+                },
+              },
+            },
+            {
+              type = 'text',
+              text = ' to google',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is a [link](https://www.google.com) to google\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert strikethrough text', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is ',
+            },
+            {
+              type = 'text',
+              text = 'strikethrough',
+              marks = {
+                {
+                  type = 'strike',
+                },
+              },
+            },
+            {
+              type = 'text',
+              text = ' text',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is ~~strikethrough~~ text\n'
     local actual = utils.convert_adf_to_markdown(code_block)
     assert.are.same(expected, actual)
   end)

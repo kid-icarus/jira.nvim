@@ -181,7 +181,23 @@ local function convert_adf_to_markdown(adt)
 
     if inline_nodes[adf_node.type] then
       -- TODO: handle marks
-      return adf_node.text
+      if adf_node.marks then
+        for _, v in ipairs(adf_node.marks) do
+          if v.type == 'strong' then
+            node_md = node_md .. '**' .. adf_node.text .. '**'
+          elseif v.type == 'em' then
+            node_md = node_md .. '*' .. adf_node.text .. '*'
+          elseif v.type == 'strike' then
+            node_md = node_md .. '~~' .. adf_node.text .. '~~'
+          elseif v.type == 'code' then
+            node_md = node_md .. '`' .. adf_node.text .. '`'
+          elseif v.type == 'link' then
+            node_md = node_md .. '[' .. adf_node.text .. '](' .. v.attrs.href .. ')'
+          end
+        end
+      else
+        node_md = node_md .. adf_node.text
+      end
     elseif top_level_block_nodes_to_markdown[adf_node.type] then
       node_md = node_md .. top_level_block_nodes_to_markdown[adf_node.type](adf_node)
     else
