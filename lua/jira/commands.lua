@@ -42,6 +42,13 @@ function M.jira(object, action, ...)
 end
 
 function M.view_issue(issue_id)
+  if not issue_id then
+    vim.ui.input({
+      prompt = 'Issue ID: ',
+    }, function(id)
+      issue_id = id
+    end)
+  end
   api_client.get_issue(issue_id, function(err, response)
     if err then
       print('Error: ' .. err)
@@ -54,6 +61,7 @@ function M.view_issue(issue_id)
         local buf = vim.api.nvim_create_buf(true, false)
         vim.api.nvim_buf_set_option(buf, 'readonly', false)
         vim.api.nvim_buf_set_option(buf, 'modifiable', true)
+        vim.api.nvim_buf_set_option(buf, 'buftype', 'nowrite')
         vim.api.nvim_buf_set_lines(buf, 0, -1, true, vim.split(desc, '\n', true))
         vim.api.nvim_buf_set_option(buf, 'modifiable', false)
         vim.api.nvim_buf_set_option(buf, 'filetype', 'markdown')
