@@ -64,6 +64,5 @@ There is only an Jira <object> <action> [arguments] command.
 
 | Object | Action | Description |
 |---|---|---|
-| issue | view [issue_id] | View the given issue, if none provided it will
-attempt to extract one out of the current git branch (disabled via `use_git_branch_issue_id`), else falls back to a prompt |
+| issue | view [issue_id] | View the given issue, if none provided it will attempt to extract one out of the current git branch (disabled via `use_git_branch_issue_id`), else falls back to a prompt |
 
