@@ -230,4 +230,13 @@ end
 
 M.convert_adf_to_markdown = convert_adf_to_markdown
 
+-- extract issue id from branch name
+-- e.g. feature/ABC-1234
+-- e.g. ABC-1234
+M.get_issue_id_from_git_branch = function()
+  local branch = vim.fn.system 'git rev-parse --abbrev-ref HEAD'
+  local issue_id = string.match(branch, '([A-Z]+%-[0-9]+)')
+  return issue_id
+end
+
 return M
