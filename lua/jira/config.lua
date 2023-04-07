@@ -6,6 +6,7 @@ M.defaults = {
     username = vim.env.JIRA_USER,
     token = vim.env.JIRA_API_TOKEN,
   },
+  use_git_branch_issue_id = true,
 }
 
 local config = {}

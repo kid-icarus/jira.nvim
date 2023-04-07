@@ -42,6 +42,14 @@ function M.jira(object, action, ...)
 end
 
 function M.view_issue(issue_id)
+  local config = require('jira.config').get_config()
+  if not issue_id then
+    if config.use_git_branch_issue_id then
+      issue_id = M.get_issue_id_from_git_branch()
+    end
+  end
+
+  -- fallback to user input
   if not issue_id then
     vim.ui.input({
       prompt = 'Issue ID: ',
@@ -49,6 +57,7 @@ function M.view_issue(issue_id)
       issue_id = id
     end)
   end
+
   api_client.get_issue(issue_id, function(err, response)
     if err then
       print('Error: ' .. err)
@@ -73,6 +82,15 @@ function M.view_issue(issue_id)
       print('Non 200 response: ' .. response.code)
     end
   end)
+end
+
+-- extract issue id from branch name
+-- e.g. feature/ABC-1234
+-- e.g. ABC-1234
+M.get_issue_id_from_git_branch = function()
+  local branch = vim.fn.system 'git rev-parse --abbrev-ref HEAD'
+  local issue_id = string.match(branch, '([A-Z]+%-[0-9]+)')
+  return issue_id
 end
 
 return M
