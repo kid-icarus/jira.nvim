@@ -78,6 +78,9 @@ local marks = Set {
 -- @param adt ADF table
 -- @return Markdown string
 local function convert_adf_to_markdown(adt)
+  if adt == vim.NIL or not adt then
+    return ''
+  end
   local md = ''
 
   local function convert_adf_node_to_markdown(adf_node)
