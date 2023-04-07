@@ -71,12 +71,14 @@ function M.view_issue(issue_id)
     if response.code < 400 then
       vim.schedule(function()
         local data = vim.fn.json_decode(response.body)
+        local summary = data.fields.summary
         local desc = utils.convert_adf_to_markdown(data.fields.description)
         local buf = vim.api.nvim_create_buf(true, false)
         vim.api.nvim_buf_set_option(buf, 'readonly', false)
         vim.api.nvim_buf_set_option(buf, 'modifiable', true)
         vim.api.nvim_buf_set_option(buf, 'buftype', 'nowrite')
-        vim.api.nvim_buf_set_lines(buf, 0, -1, true, vim.split(desc, '\n', true))
+        vim.api.nvim_buf_set_lines(buf, 0, -1, true, { '# ' .. summary, '' })
+        vim.api.nvim_buf_set_lines(buf, -1, -1, true, vim.split(desc, '\n'))
         vim.api.nvim_buf_set_option(buf, 'modifiable', false)
         vim.api.nvim_buf_set_option(buf, 'filetype', 'markdown')
         vim.cmd 'vsplit'
@@ -88,6 +90,5 @@ function M.view_issue(issue_id)
     end
   end)
 end
-
 
 return M
