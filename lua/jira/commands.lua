@@ -58,6 +58,11 @@ function M.view_issue(issue_id)
     end)
   end
 
+  if not issue_id then
+    print 'Missing issue id'
+    return
+  end
+
   api_client.get_issue(issue_id, function(err, response)
     if err then
       print('Error: ' .. err)
