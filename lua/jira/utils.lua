@@ -49,9 +49,9 @@ local top_level_block_nodes = Set {
 local child_block_nodes = Set {
   'listItem',
   'media',
-  'table_cell',
-  'table_header',
-  'table_row',
+  'tableHeader',
+  'tableRow',
+  'tableCell',
 }
 
 local inline_nodes = Set {
@@ -186,6 +186,46 @@ local function convert_adf_to_markdown(adt)
         else
           return '📷'
         end
+      end,
+      table = function(node)
+        node_md = ''
+        for _, v in ipairs(node.content) do
+          node_md = node_md .. convert_adf_node_to_markdown(v)
+        end
+        return node_md
+      end,
+      tableRow = function(node)
+        node_md = '|'
+        local is_header = false
+        for _, v in ipairs(node.content) do
+          if v.type == 'tableHeader' then
+            is_header = true
+          end
+          node_md = node_md .. convert_adf_node_to_markdown(v)
+        end
+        if is_header then
+          node_md = node_md .. '\n|'
+          for _ in ipairs(node.content) do
+            node_md = node_md .. ' --- |'
+          end
+        end
+        return node_md .. '\n'
+      end,
+      tableHeader = function(node)
+        node_md = ' '
+        for _, v in ipairs(node.content) do
+          -- crude way to get rid of the newlines in <p> tags
+          node_md = node_md .. vim.trim(convert_adf_node_to_markdown(v))
+        end
+        return node_md .. ' |'
+      end,
+      tableCell = function(node)
+        node_md = ' '
+        for _, v in ipairs(node.content) do
+          -- crude way to get rid of the newlines in <p> tags
+          node_md = node_md .. vim.trim(convert_adf_node_to_markdown(v))
+        end
+        return node_md .. ' |'
       end,
     }
 

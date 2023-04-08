@@ -725,4 +725,87 @@ describe('convert_adf_to_markdown', function()
     local actual = utils.convert_adf_to_markdown(code_block)
     assert.are.same(expected, actual)
   end)
+
+  it('should convert a table with a header', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'table',
+          content = {
+            {
+              type = 'tableRow',
+              content = {
+                {
+                  type = 'tableHeader',
+                  content = {
+                    {
+                      type = 'paragraph',
+                      content = {
+                        {
+                          type = 'text',
+                          text = 'Header 1',
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type = 'tableHeader',
+                  content = {
+                    {
+                      type = 'paragraph',
+                      content = {
+                        {
+                          type = 'text',
+                          text = 'Header 2',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            {
+              type = 'tableRow',
+              content = {
+                {
+                  type = 'tableCell',
+                  content = {
+                    {
+                      type = 'paragraph',
+                      content = {
+                        {
+                          type = 'text',
+                          text = 'Cell 1',
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type = 'tableCell',
+                  content = {
+                    {
+                      type = 'paragraph',
+                      content = {
+                        {
+                          type = 'text',
+                          text = 'Cell 2',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+    local expected = '| Header 1 | Header 2 |\n| --- | --- |\n| Cell 1 | Cell 2 |\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
 end)
