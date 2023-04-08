@@ -184,7 +184,8 @@ local function convert_adf_to_markdown(adt)
 
     local inline_nodes_to_markdown = {
       emoji = function(node)
-        return node.attrs.shortName
+        -- not sure if this is the best way to do this
+        return node.attrs.text
       end,
       hardBreak = function()
         return '\n'
@@ -215,10 +216,12 @@ local function convert_adf_to_markdown(adt)
         return table.concat(text_marks) .. adf_node.text .. table.concat(text_marks):reverse()
       end,
       mention = function(node)
-        return '@' .. node.attrs.text
+        return node.attrs.text
       end,
       inlineCard = function(node)
-        return '[' .. node.attrs.url .. '](' .. node.attrs.url .. ')'
+        -- there are probably other cases to cover here. the docs are not
+        -- clear.
+        return '<' .. node.attrs.url .. '>'
       end,
       date = function(node)
         return node.attrs.timestamp

@@ -536,4 +536,163 @@ describe('convert_adf_to_markdown', function()
     local actual = utils.convert_adf_to_markdown(code_block)
     assert.are.same(expected, actual)
   end)
+
+  it('should convert emoji', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is ',
+            },
+            {
+              type = 'emoji',
+              attrs = {
+                shortName = ':smile:',
+                text = '😄',
+              },
+            },
+            {
+              type = 'text',
+              text = ' text',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is 😄 text\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert a mention', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is a ',
+            },
+            {
+              type = 'mention',
+              attrs = {
+                id = '123',
+                text = '@John Doe',
+              },
+            },
+            {
+              type = 'text',
+              text = ' mention',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is a @John Doe mention\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert a date', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is a ',
+            },
+            {
+              type = 'date',
+              attrs = {
+                timestamp = '2019-01-01T00:00:00.000Z',
+              },
+            },
+            {
+              type = 'text',
+              text = ' date',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is a 2019-01-01T00:00:00.000Z date\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert a hard break', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is a ',
+            },
+            {
+              type = 'hardBreak',
+            },
+            {
+              type = 'text',
+              text = ' hard break',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is a \n hard break\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
+
+  it('should convert an inline card', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'paragraph',
+          content = {
+            {
+              type = 'text',
+              text = 'This is an ',
+            },
+            {
+              type = 'inlineCard',
+              attrs = {
+                url = 'https://www.google.com',
+              },
+            },
+            {
+              type = 'text',
+              text = ' inline card',
+            },
+          },
+        },
+      },
+    }
+
+    local expected = 'This is an <https://www.google.com> inline card\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
 end)
