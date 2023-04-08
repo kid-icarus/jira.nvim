@@ -182,10 +182,19 @@ local function convert_adf_to_markdown(adt)
       end,
     }
 
-    if inline_nodes[adf_node.type] then
-      -- TODO: handle marks
-      local text_marks = {}
-      if adf_node.marks then
+    local inline_nodes_to_markdown = {
+      emoji = function(node)
+        return node.attrs.shortName
+      end,
+      hardBreak = function()
+        return '\n'
+      end,
+      text = function(node)
+        assert(node.text, 'text node must have text field')
+        local text_marks = {}
+        if not node.marks then
+          return node.text
+        end
         for _, v in ipairs(adf_node.marks) do
           if v.type == 'link' then
             return node_md .. '[' .. adf_node.text .. '](' .. v.attrs.href .. ')'
@@ -203,10 +212,21 @@ local function convert_adf_to_markdown(adt)
             text_marks[#text_marks + 1] = '__'
           end
         end
-        node_md = node_md .. table.concat(text_marks) .. adf_node.text .. table.concat(text_marks):reverse()
-      else
-        node_md = node_md .. adf_node.text
-      end
+        return table.concat(text_marks) .. adf_node.text .. table.concat(text_marks):reverse()
+      end,
+      mention = function(node)
+        return '@' .. node.attrs.text
+      end,
+      inlineCard = function(node)
+        return '[' .. node.attrs.url .. '](' .. node.attrs.url .. ')'
+      end,
+      date = function(node)
+        return node.attrs.timestamp
+      end,
+    }
+
+    if inline_nodes[adf_node.type] then
+      node_md = node_md .. inline_nodes_to_markdown[adf_node.type](adf_node)
     elseif top_level_block_nodes_to_markdown[adf_node.type] then
       node_md = node_md .. top_level_block_nodes_to_markdown[adf_node.type](adf_node)
     else
