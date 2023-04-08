@@ -79,6 +79,18 @@ function M.view_issue(issue_id)
         vim.api.nvim_buf_set_option(buf, 'buftype', 'nowrite')
         vim.api.nvim_buf_set_lines(buf, 0, -1, true, { '# ' .. summary, '' })
         vim.api.nvim_buf_set_lines(buf, -1, -1, true, vim.split(desc, '\n'))
+        vim.api.nvim_buf_set_lines(buf, -1, -1, true, { '', '## Comments', '' })
+        if data.fields.comment.total == 0 then
+          vim.api.nvim_buf_set_lines(buf, -1, -1, true, { 'No comments', '' })
+        else
+          for _, comment in ipairs(data.fields.comment.comments) do
+            local author = comment.author.displayName
+            local timestamp = comment.updated
+            local body = utils.convert_adf_to_markdown(comment.body)
+            vim.api.nvim_buf_set_lines(buf, -1, -1, true, { '# ' .. author .. ' ' .. timestamp, '' })
+            vim.api.nvim_buf_set_lines(buf, -1, -1, true, vim.split(body, '\n'))
+          end
+        end
         vim.api.nvim_buf_set_option(buf, 'modifiable', false)
         vim.api.nvim_buf_set_option(buf, 'filetype', 'markdown')
         vim.cmd 'vsplit'
