@@ -695,4 +695,34 @@ describe('convert_adf_to_markdown', function()
     local actual = utils.convert_adf_to_markdown(code_block)
     assert.are.same(expected, actual)
   end)
+
+  it('should convert a panel', function()
+    local code_block = {
+      version = 1,
+      type = 'doc',
+      content = {
+        {
+          type = 'panel',
+          attrs = {
+            panelType = 'info',
+          },
+          content = {
+            {
+              type = 'paragraph',
+              content = {
+                {
+                  type = 'text',
+                  text = 'This is a panel',
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+
+    local expected = '> **info**\n> This is a panel\n\n'
+    local actual = utils.convert_adf_to_markdown(code_block)
+    assert.are.same(expected, actual)
+  end)
 end)

@@ -112,6 +112,13 @@ local function convert_adf_to_markdown(adt)
         end
         return node_md .. '\n'
       end,
+      panel = function(node)
+        node_md = '> **' .. node.attrs.panelType .. '**\n'
+        for i, v in ipairs(node.content) do
+          node_md = node_md .. '> ' .. convert_adf_node_to_markdown(v)
+        end
+        return node_md .. '\n'
+      end,
       paragraph = function(node)
         node_md = ''
         for i, v in ipairs(node.content) do
