@@ -13,6 +13,9 @@ M.setup = function()
       view = function(issue_id)
         M.view_issue(issue_id)
       end,
+      transition = function(issue_id, transition_name)
+        M.transition_issue_name(issue_id, transition_name)
+      end,
     },
   }
 end
@@ -42,22 +45,7 @@ function M.jira(object, action, ...)
 end
 
 function M.view_issue(issue_id)
-  local config = require('jira.config').get_config()
-  if not issue_id then
-    if config.use_git_branch_issue_id then
-      issue_id = utils.get_issue_id_from_git_branch()
-    end
-  end
-
-  -- fallback to user input
-  if not issue_id then
-    vim.ui.input({
-      prompt = 'Issue ID: ',
-    }, function(id)
-      issue_id = id
-    end)
-  end
-
+  issue_id = issue_id or utils.get_issue_id()
   if not issue_id then
     print 'Missing issue id'
     return
@@ -97,6 +85,29 @@ function M.view_issue(issue_id)
         local win = vim.api.nvim_get_current_win()
         vim.api.nvim_win_set_buf(win, buf)
       end)
+    else
+      print('Non 200 response: ' .. response.code)
+    end
+  end)
+end
+
+-- @param issue_id string - the id of the issue to transition
+-- @param transition_name string - the name of the transition to perform
+function M.transition_issue_name(issue_id, transition_name)
+  issue_id = issue_id or utils.get_issue_id()
+  if not issue_id then
+    print 'Missing issue id'
+    return
+  end
+  transition_name = transition_name or vim.fn.input 'Transition name: '
+  transition_name = transition_name:gsub('_', ' ')
+  api_client.transition_issue_name(issue_id, transition_name, function(err, response)
+    if err then
+      print('Error: ' .. err)
+      return
+    end
+    if response.code < 400 then
+      print('Transitioned issue ' .. issue_id .. ' to ' .. transition_name)
     else
       print('Non 200 response: ' .. response.code)
     end
