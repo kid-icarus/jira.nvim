@@ -304,8 +304,23 @@ M.convert_adf_to_markdown = convert_adf_to_markdown
 -- e.g. feature/ABC-1234
 -- e.g. ABC-1234
 M.get_issue_id_from_git_branch = function()
+  local config = require('jira.config').get_config()
+  if config.use_git_branch == false then
+    return nil
+  end
   local branch = vim.fn.system 'git rev-parse --abbrev-ref HEAD'
   local issue_id = string.match(branch, '([A-Z]+%-[0-9]+)')
+  return issue_id
+end
+
+M.get_issue_id = function(issue_id)
+  if issue_id then
+    return issue_id
+  end
+  issue_id = M.get_issue_id_from_git_branch()
+  if issue_id == nil then
+    issue_id = vim.fn.input 'Enter issue id: '
+  end
   return issue_id
 end
 
