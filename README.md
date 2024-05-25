@@ -30,7 +30,7 @@ Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
 use {
   'kid-icarus/jira.nvim',
   requires = {
-    'jcdickinson/http.nvim',
+    'nvim-lua/plenary.nvim',
   }
   config = function ()
     require'jira'.setup() -- see configuration section
@@ -44,7 +44,7 @@ Using [lazygit.nvim](https://github.com/folke/lazy.nvim)
 {
   'kid-icarus/jira.nvim',
   dependencies = {
-    'jcdickinson/http.nvim',
+    'nvim-lua/plenary.nvim',
   },
   opts = {}, -- see configuration section
 }

@@ -51,44 +51,39 @@ function M.view_issue(issue_id)
     return
   end
 
-  api_client.get_issue(issue_id, function(err, response)
-    if err then
-      print('Error: ' .. err)
-      return
-    end
-    if response.code < 400 then
-      vim.schedule(function()
-        local data = vim.fn.json_decode(response.body)
-        local summary = data.fields.summary
-        local desc = utils.convert_adf_to_markdown(data.fields.description)
-        local buf = vim.api.nvim_create_buf(true, false)
-        vim.api.nvim_buf_set_option(buf, 'readonly', false)
-        vim.api.nvim_buf_set_option(buf, 'modifiable', true)
-        vim.api.nvim_buf_set_option(buf, 'buftype', 'nowrite')
-        vim.api.nvim_buf_set_lines(buf, 0, -1, true, { '# ' .. summary, '' })
-        vim.api.nvim_buf_set_lines(buf, -1, -1, true, vim.split(desc, '\n'))
-        vim.api.nvim_buf_set_lines(buf, -1, -1, true, { '', '## Comments', '' })
-        if data.fields.comment.total == 0 then
-          vim.api.nvim_buf_set_lines(buf, -1, -1, true, { 'No comments', '' })
-        else
-          for _, comment in ipairs(data.fields.comment.comments) do
-            local author = comment.author.displayName
-            local timestamp = comment.updated
-            local body = utils.convert_adf_to_markdown(comment.body)
-            vim.api.nvim_buf_set_lines(buf, -1, -1, true, { '# ' .. author .. ' ' .. timestamp, '' })
-            vim.api.nvim_buf_set_lines(buf, -1, -1, true, vim.split(body, '\n'))
-          end
+  local response = api_client.get_issue(issue_id)
+  if response.status < 400 then
+    vim.schedule(function()
+      local data = vim.fn.json_decode(response.body)
+      local summary = data.fields.summary
+      local desc = utils.convert_adf_to_markdown(data.fields.description)
+      local buf = vim.api.nvim_create_buf(true, false)
+      vim.api.nvim_buf_set_option(buf, 'readonly', false)
+      vim.api.nvim_buf_set_option(buf, 'modifiable', true)
+      vim.api.nvim_buf_set_option(buf, 'buftype', 'nowrite')
+      vim.api.nvim_buf_set_lines(buf, 0, -1, true, { '# ' .. summary, '' })
+      vim.api.nvim_buf_set_lines(buf, -1, -1, true, vim.split(desc, '\n'))
+      vim.api.nvim_buf_set_lines(buf, -1, -1, true, { '', '## Comments', '' })
+      if data.fields.comment.total == 0 then
+        vim.api.nvim_buf_set_lines(buf, -1, -1, true, { 'No comments', '' })
+      else
+        for _, comment in ipairs(data.fields.comment.comments) do
+          local author = comment.author.displayName
+          local timestamp = comment.updated
+          local body = utils.convert_adf_to_markdown(comment.body)
+          vim.api.nvim_buf_set_lines(buf, -1, -1, true, { '# ' .. author .. ' ' .. timestamp, '' })
+          vim.api.nvim_buf_set_lines(buf, -1, -1, true, vim.split(body, '\n'))
         end
-        vim.api.nvim_buf_set_option(buf, 'modifiable', false)
-        vim.api.nvim_buf_set_option(buf, 'filetype', 'markdown')
-        vim.cmd 'vsplit'
-        local win = vim.api.nvim_get_current_win()
-        vim.api.nvim_win_set_buf(win, buf)
-      end)
-    else
-      print('Non 200 response: ' .. response.code)
-    end
-  end)
+      end
+      vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+      vim.api.nvim_buf_set_option(buf, 'filetype', 'markdown')
+      vim.cmd 'vsplit'
+      local win = vim.api.nvim_get_current_win()
+      vim.api.nvim_win_set_buf(win, buf)
+    end)
+  else
+    print('Non 200 response: ' .. response.code)
+  end
 end
 
 -- @param issue_id string - the id of the issue to transition
@@ -101,17 +96,14 @@ function M.transition_issue_name(issue_id, transition_name)
   end
   transition_name = transition_name or vim.fn.input 'Transition name: '
   transition_name = transition_name:gsub('_', ' ')
-  api_client.transition_issue_name(issue_id, transition_name, function(err, response)
-    if err then
-      print('Error: ' .. err)
-      return
-    end
-    if response.code < 400 then
-      print('Transitioned issue ' .. issue_id .. ' to ' .. transition_name)
-    else
-      print('Non 200 response: ' .. response.code)
-    end
-  end)
+  local response = api_client.transition_issue_name(issue_id, transition_name)
+  if response and (response.exit ~= 0 or response.status ~= 204) then
+    vim.print 'Error making request'
+  end
+  if response and response.status == 204 then
+    vim.print 'Transitioned issue'
+  else
+  end
 end
 
 return M
