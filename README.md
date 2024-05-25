@@ -24,6 +24,8 @@ Please follow along with the [initial release discussion](https://github.com/kid
 
 Use your favourite plugin manager to install it. eg:
 
+Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
 ```lua
 use {
   'kid-icarus/jira.nvim',
@@ -31,8 +33,20 @@ use {
     'jcdickinson/http.nvim',
   }
   config = function ()
-    require'jira'.setup()
+    require'jira'.setup() -- see configuration section
   end
+}
+```
+
+Using [lazygit.nvim](https://github.com/folke/lazy.nvim)
+
+```lua
+{
+  'kid-icarus/jira.nvim',
+  dependencies = {
+    'jcdickinson/http.nvim',
+  },
+  opts = {}, -- see configuration section
 }
 ```
 

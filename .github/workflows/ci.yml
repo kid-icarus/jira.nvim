@@ -3,6 +3,12 @@ name: Lint and style
 on: [push, pull_request]
 
 jobs:
+  commit_lint:
+    runs-on: ubuntu-latest
+    steps:
+      # Check commit messages
+      - uses: webiny/action-conventional-commits@v1.3.0
+
   stylua:
     name: stylua
     runs-on: ubuntu-20.04
