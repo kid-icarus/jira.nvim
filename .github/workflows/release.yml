@@ -18,5 +18,7 @@ jobs:
           test_interpreters: |
             neovim-stable
             neovim-nightly
+          dependencies: |
+            plenary.nvim
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}

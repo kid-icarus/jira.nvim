@@ -1,6 +1,6 @@
-local http = require 'http'
 local utils = require 'jira.utils'
 local config = require 'jira.config'
+local curl = require 'plenary.curl'
 
 local M = {}
 
@@ -17,76 +17,60 @@ local get_base_url = function()
   return 'https://' .. jira_api_config.domain .. '/rest/api/3'
 end
 
-M.get_issue = function(issue_id, callback)
+M.get_issue = function(issue_id)
   local url = get_base_url() .. '/issue/' .. issue_id
-  http.request {
-    http.methods.GET,
-    url,
-    nil,
-    nil,
+  return curl.get(url, {
     headers = get_auth_headers(),
-    callback = callback,
-  }
+  })
 end
 
-M.get_transitions = function(issue_id, callback)
+M.get_transitions = function(issue_id)
   local url = get_base_url() .. '/issue/' .. issue_id .. '/transitions'
-  http.request {
-    http.methods.GET,
-    url,
-    nil,
-    nil,
+  return curl.get(url, {
     headers = get_auth_headers(),
-    callback = callback,
-  }
+  })
 end
 
 -- Gets the transition id for the given transition name and then transitions the issue
 -- Helpful for when you don't know the transition id
-M.transition_issue_name = function(issue_id, transition_name, callback)
-  M.get_transitions(issue_id, function(err, response)
-    if err then
-      print('Error getting transitions: ' .. err)
-      return
+M.transition_issue_name = function(issue_id, transition_name)
+  local response = M.get_transitions(issue_id)
+  if response.exit ~= 0 then
+    vim.print 'Error getting transitions'
+  end
+  if response.status ~= 200 then
+    print('Error getting transitions: ' .. response.body)
+    return
+  end
+
+  local result = vim.fn.json_decode(response.body)
+  local transitions = result.transitions
+  local transition_id
+  for _, transition in ipairs(transitions) do
+    if transition.name == transition_name then
+      transition_id = transition.id
+      break
     end
-    if response.code >= 400 then
-      print('Error getting transitions: ' .. response.body)
-      return
-    end
-    vim.schedule(function()
-      local result = vim.fn.json_decode(response.body)
-      if err then
-        print('Error getting transitions: ' .. err)
-        return
-      end
-      local transitions = result.transitions
-      for _, transition in ipairs(transitions) do
-        if transition.name == transition_name then
-          M.transition_issue(issue_id, transition.id, callback)
-          return
-        end
-      end
-      assert(transition_name, 'Transition not found: ' .. transition_name)
-    end)
-  end)
+  end
+  assert(transition_id, 'Transition not found: ' .. transition_name)
+  return M.transition_issue(issue_id, transition_id)
 end
 
 -- Transitions the issue to the given transition id
-M.transition_issue = function(issue_id, transition_id, callback)
+M.transition_issue = function(issue_id, transition_id)
+  assert(issue_id, 'Missing issue id')
+  assert(transition_id, 'Missing issue id')
   local url = get_base_url() .. '/issue/' .. issue_id .. '/transitions'
   local body = vim.json.encode {
     transition = {
       id = transition_id,
     },
   }
-  http.request {
-    http.methods.POST,
-    url,
-    body,
-    nil,
+
+  return curl.post(url, {
     headers = get_auth_headers(),
-    callback = callback,
-  }
+    body = body,
+  })
 end
 
 return M
