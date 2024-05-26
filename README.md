@@ -93,6 +93,6 @@ There are no default mappings, but you can create your own. Here's an example:
 
 ```lua
 local t = require 'telescope'
-vim.keymap.set('n', '<leader>jt', '<cmd>Jira issue view<cr>', {})
-vim.keymap.set('n', '<leader>jv', t.extensions.jira.transitions, {})
+vim.keymap.set('n', '<leader>jv', '<cmd>Jira issue view<cr>', {})
+vim.keymap.set('n', '<leader>jt', t.extensions.jira.transitions, {})
 ```
