@@ -20,5 +20,6 @@ jobs:
             neovim-nightly
           dependencies: |
             plenary.nvim
+            telescope.nvim
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}

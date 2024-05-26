@@ -31,6 +31,7 @@ use {
   'kid-icarus/jira.nvim',
   requires = {
     'nvim-lua/plenary.nvim',
+    'nvim-telescope/telescope.nvim',
   }
   config = function ()
     require'jira'.setup() -- see configuration section
@@ -45,6 +46,7 @@ Using [lazygit.nvim](https://github.com/folke/lazy.nvim)
   'kid-icarus/jira.nvim',
   dependencies = {
     'nvim-lua/plenary.nvim',
+    'nvim-telescope/telescope.nvim',
   },
   opts = {}, -- see configuration section
 }
@@ -81,3 +83,16 @@ There is only an Jira <object> <action> [arguments] command.
 | issue | view [issue_id] | View the given issue, if none provided it will attempt to extract one out of the current git branch (disabled via `use_git_branch_issue_id`), else falls back to a prompt |
 |   |  transition [issue_id] [transition_name] | Transition the ticket to a given status. Will attempt to extract issue ID from git branch, and will prompt if no options given
 
+Additionally, the transition command has a Telescope picker.
+
+`:Telescope jira transitions`
+
+## Mappings
+
+There are no default mappings, but you can create your own. Here's an example:
+
+```lua
+local t = require 'telescope'
+vim.keymap.set('n', '<leader>jt', '<cmd>Jira issue view<cr>', {})
+vim.keymap.set('n', '<leader>jv', t.extensions.jira.transitions, {})
+```
