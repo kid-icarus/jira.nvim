@@ -13,8 +13,8 @@ M.setup = function()
       view = function(issue_id)
         M.view_issue(issue_id)
       end,
-      transition = function(issue_id, transition_name)
-        M.transition_issue_name(issue_id, transition_name)
+      transition = function(transition_name, issue_id)
+        M.transition_issue_name(transition_name, issue_id)
       end,
     },
   }
@@ -88,15 +88,15 @@ end
 
 -- @param issue_id string - the id of the issue to transition
 -- @param transition_name string - the name of the transition to perform
-function M.transition_issue_name(issue_id, transition_name)
+function M.transition_issue_name(transition_name, issue_id)
+  transition_name = transition_name or vim.fn.input 'Transition to: '
   issue_id = issue_id or utils.get_issue_id()
   if not issue_id then
     print 'Missing issue id'
     return
   end
-  transition_name = transition_name or vim.fn.input 'Transition name: '
   transition_name = transition_name:gsub('_', ' ')
-  local response = api_client.transition_issue_name(issue_id, transition_name)
+  local response = api_client.transition_issue_name(transition_name, issue_id)
   if response and (response.exit ~= 0 or response.status ~= 204) then
     vim.print 'Error making request'
   end
