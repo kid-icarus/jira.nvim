@@ -8,6 +8,7 @@ M.defaults = {
   },
   use_git_branch_issue_id = true,
   git_branch_prefix = 'feature/',
+  git_trunk_branch = 'main',
 }
 
 local config = {}
