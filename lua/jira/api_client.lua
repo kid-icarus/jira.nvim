@@ -1,6 +1,7 @@
 local utils = require 'jira.utils'
 local config = require 'jira.config'
 local curl = require 'plenary.curl'
+local _, Job = pcall(require, 'plenary.job')
 
 local M = {}
 local transition_cache = {}
@@ -79,6 +80,47 @@ M.transition_issue = function(transition_id, issue_id)
     headers = get_auth_headers(),
     body = body,
   })
+end
+
+-- Creates an issue with the given type, summary, and optional description file path
+-- @param issue table - the issue to create
+-- @param issue.type string - the type of the issue
+-- @param issue.summary string - the summary of the issue
+-- @param issue.descriptionFile string - the path to the file containing the description
+-- @return table - the issue id and link
+-- e.g. { issue_id = 'ABC-1234', link = 'https://blah.atlassian.net/ABC-1234' }
+M.create_issue = function(issue)
+  local type = issue.type
+  local summary = issue.summary
+  local descriptionFilePath = issue.descriptionFile
+  assert(type, 'Missing issue type')
+  assert(summary, 'Missing issue summary')
+
+  local args = { 'issue', 'create', '-t', type, '-s', summary }
+  if descriptionFilePath then
+    table.insert(args, '-T')
+    table.insert(args, descriptionFilePath)
+  end
+
+  local job = Job:new {
+    enable_recording = true,
+    interactive = false,
+    command = 'jira',
+    args = args,
+    on_exit = function(_, code)
+      if code ~= 0 then
+        vim.nofity('Error creating issue', vim.log.levels.ERROR)
+      end
+    end,
+  }
+  job:sync()
+  local lines = job:result()
+  -- last line is the issue id
+  -- e.g. 'Issue created: ABC-1234'
+  -- extract the issue id:
+  -- 'ABC-1234'
+  local issue_id = lines[#lines]:match '([A-Z]+%-[0-9]+)'
+  return { issue_id = issue_id, link = lines[#lines] }
 end
 
 return M

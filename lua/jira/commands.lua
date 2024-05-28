@@ -1,6 +1,7 @@
 local api_client = require 'jira.api_client'
 local utils = require 'jira.utils'
 local M = {}
+local config = require 'jira.config'
 
 M.setup = function()
   vim.api.nvim_create_user_command('Jira', function(opts)
@@ -15,6 +16,9 @@ M.setup = function()
       end,
       transition = function(transition_name, issue_id)
         M.transition_issue_name(transition_name, issue_id)
+      end,
+      create = function(args)
+        M.create_issue(args)
       end,
     },
   }
@@ -104,6 +108,110 @@ function M.transition_issue_name(transition_name, issue_id)
     vim.print 'Transitioned issue'
   else
   end
+end
+
+local function get_char_input()
+  local char = vim.fn.getchar()
+  -- if char is escape
+  if char == 27 then
+    return nil
+  end
+  return vim.fn.nr2char(char)
+end
+
+local function clear_prompt()
+  vim.api.nvim_command 'normal! :'
+end
+
+-- create a git branch with the issue id
+-- @param issue_id string - the issue id to use for the branch
+-- @param branch_suffix string - the suffix to append to the branch name
+local create_git_branch = function(issue_id, branch_suffix)
+  local branch_from = config.get_config().git_trunk_branch
+  vim.ui.input({
+    prompt = 'Enter branch to create branch from [esc to cancel]: ',
+    default = branch_from or 'main',
+  }, function(value)
+    branch_from = value
+  end)
+
+  if not branch_from or branch_from == '' then
+    return
+  end
+
+  utils.create_git_branch(issue_id, branch_suffix, branch_from)
+end
+
+function M.create_issue(issueType)
+  if not issueType then
+    vim.ui.input({
+      prompt = 'Issue type: ',
+      default = 'Task',
+    }, function(value)
+      issueType = value
+    end)
+  end
+  if not issueType or issueType == '' then
+    return
+  end
+
+  local summary
+  vim.ui.input({
+    prompt = 'Summary: ',
+  }, function(value)
+    summary = value
+  end)
+
+  if not summary or summary == '' then
+    return
+  end
+
+  clear_prompt()
+  print 'Edit description? (y/N)'
+  local res = get_char_input()
+  clear_prompt()
+  -- if user cancels
+  if res == nil then
+    return
+  end
+  local edit_description = false
+  if res:match '\r' or res:match '\n' or res:match 'n' or res:match 'N' then
+    edit_description = false
+  end
+  if res:match 'y' or res:match 'Y' then
+    edit_description = true
+  end
+
+  if not edit_description then
+    local r = api_client.create_issue {
+      type = issueType,
+      summary = summary,
+    }
+    vim.notify(r.link)
+    create_git_branch(r.issue_id, summary)
+    return
+  end
+
+  local tempfile = vim.fn.tempname()
+  local bufnr = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_buf_set_name(bufnr, tempfile)
+  vim.api.nvim_buf_set_option(bufnr, 'filetype', 'markdown')
+  vim.cmd 'split'
+  local win = vim.api.nvim_get_current_win()
+  vim.api.nvim_win_set_buf(win, bufnr)
+  vim.api.nvim_create_autocmd('BufWritePost', {
+    buffer = bufnr,
+    callback = function()
+      local r = api_client.create_issue {
+        type = issueType,
+        summary = summary,
+        descriptionFile = tempfile,
+      }
+      vim.notify(r.link)
+      create_git_branch(r.issue_id, summary)
+      vim.api.nvim_buf_delete(bufnr, { force = true })
+    end,
+  })
 end
 
 return M

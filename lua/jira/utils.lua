@@ -1,4 +1,6 @@
 local M = {}
+local _, Job = pcall(require, 'plenary.job')
+local config = require 'jira.config'
 
 function Set(list)
   local set = {}
@@ -322,6 +324,25 @@ M.get_issue_id = function(issue_id)
     issue_id = vim.fn.input 'Enter issue id: '
   end
   return issue_id
+end
+
+M.create_git_branch = function(issue_id, branch_suffix, branch_from)
+  -- replace whitespace with hyphens
+  branch_suffix = branch_suffix:gsub('%s', '-')
+  -- lowercase and strip all non-alphanumeric characters
+  branch_suffix = branch_suffix:gsub('[^%w-]+', ''):lower()
+
+  local branch_prefix = config.get_config().git_branch_prefix
+  local branch = branch_prefix .. issue_id .. '/' .. branch_suffix
+  Job:new({
+    command = 'git',
+    args = { 'branch', branch, branch_from or 'main' },
+    on_exit = function(_, code)
+      if code ~= 0 then
+        vim.notify('Error creating branch', vim.log.levels.ERROR)
+      end
+    end,
+  }):sync()
 end
 
 return M
