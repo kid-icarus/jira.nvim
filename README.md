@@ -83,7 +83,7 @@ There is only an Jira <object> <action> [arguments] command.
 | Object | Action | Description |
 |---|---|---|
 | issue | view [issue_id] | View the given issue, if none provided it will attempt to extract one out of the current git branch (disabled via `use_git_branch_issue_id`), else falls back to a prompt |
-|   |  transition [issue_id] [transition_name] | Transition the ticket to a given status. Will attempt to extract issue ID from git branch, and will prompt if no options given
+|   |  transition [transition_name] [issue_id] | Transition the ticket to a given status. Will attempt to extract issue ID from git branch, and will prompt if no options given
 |   |  create | Create a new issue. Will prompt for all required fields. It will also prompt you to create a branch with the created issue ID in the name.
 
 Additionally, the transition command has a Telescope picker.
