@@ -7,12 +7,17 @@ M.defaults = {
     token = vim.env.JIRA_API_TOKEN,
   },
   use_git_branch_issue_id = true,
+  git_branch_prefix = 'feature/',
 }
 
 local config = {}
 
 function M.get_config()
   return config or M.defaults
+end
+
+function M.set_current_issue(issue_id)
+  config.current_issue = issue_id
 end
 
 function M.setup(user_config)

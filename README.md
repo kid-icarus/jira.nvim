@@ -18,7 +18,7 @@ Please follow along with the [initial release discussion](https://github.com/kid
 
 ## ⚡️ Requirements
 
-- Install [http.nvim](https://github.com/jcdickinson/http.nvim)
+- Instead of using the Jira API directly in all cases, this plugin leverages the [jira-cli tool](https://github.com/ankitpokhrel/jira-cli) to interact with Jira. You'll need to install it and configure it with your Jira credentials in order to use some of the features of this plugin.
 
 ## 📦 Installation
 
@@ -82,6 +82,7 @@ There is only an Jira <object> <action> [arguments] command.
 |---|---|---|
 | issue | view [issue_id] | View the given issue, if none provided it will attempt to extract one out of the current git branch (disabled via `use_git_branch_issue_id`), else falls back to a prompt |
 |   |  transition [issue_id] [transition_name] | Transition the ticket to a given status. Will attempt to extract issue ID from git branch, and will prompt if no options given
+|   |  create | Create a new issue. Will prompt for all required fields. It will also prompt you to create a branch with the created issue ID in the name.
 
 Additionally, the transition command has a Telescope picker.
 
@@ -95,4 +96,5 @@ There are no default mappings, but you can create your own. Here's an example:
 local t = require 'telescope'
 vim.keymap.set('n', '<leader>jv', '<cmd>Jira issue view<cr>', {})
 vim.keymap.set('n', '<leader>jt', t.extensions.jira.transitions, {})
+vim.keymap.set('n', '<leader>jc', '<cmd>Jira issue create<cr>', {})
 ```
