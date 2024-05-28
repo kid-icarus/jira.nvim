@@ -71,6 +71,7 @@ require'jira'.setup({
     token = vim.env.JIRA_API_TOKEN
   },
   use_git_branch_issue_id = true,
+  git_trunk_branch = 'main', -- The main branch of your project
 })
 ```
 
