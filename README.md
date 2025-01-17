@@ -39,7 +39,7 @@ use {
 }
 ```
 
-Using [lazygit.nvim](https://github.com/folke/lazy.nvim)
+Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 {
