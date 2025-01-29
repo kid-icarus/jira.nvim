@@ -6,7 +6,7 @@ A neovim interface to Jira.
 
 - Maximalism - an all-encompassing interface to Jira vs. tiny lib.
 - Integration - integrate with popular neovim plugins for an enhanced UX.
-    Telescope, etc.
+    Telescope, Snacks Picker, etc.
 
 ## Non-goals
 
@@ -31,7 +31,8 @@ use {
   'kid-icarus/jira.nvim',
   requires = {
     'nvim-lua/plenary.nvim',
-    'nvim-telescope/telescope.nvim',
+    'nvim-telescope/telescope.nvim', -- optional
+    'folke/snacks.nvim', -- optional
   }
   config = function ()
     require'jira'.setup() -- see configuration section
@@ -46,7 +47,8 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
   'kid-icarus/jira.nvim',
   dependencies = {
     'nvim-lua/plenary.nvim',
-    'nvim-telescope/telescope.nvim',
+    'nvim-telescope/telescope.nvim', -- optional
+    'folke/snacks.nvim', -- optional
   },
   opts = {}, -- see configuration section
 }
@@ -60,7 +62,7 @@ token](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-fo
 By default, jira.nvim is configured a to use few environment variables you'll need to set them or override them in setup order to use the plugin:
 
 - `JIRA_USER` - Your atlassian username
-- `JIRA_API_TOKEN` - Your personal API token 
+- `JIRA_API_TOKEN` - Your personal API token
 - `JIRA_DOMAIN` - The domain of your Jira instance, i.e. `example.atlassian.net`
 
 ```lua
@@ -90,13 +92,15 @@ Additionally, the transition command has a Telescope picker.
 
 `:Telescope jira transitions`
 
+Otherwise you can use the key mappings below. (Telescope / Snacks)
+
 ## Mappings
 
 There are no default mappings, but you can create your own. Here's an example:
 
 ```lua
-local t = require 'telescope'
 vim.keymap.set('n', '<leader>jv', '<cmd>Jira issue view<cr>', {})
-vim.keymap.set('n', '<leader>jt', t.extensions.jira.transitions, {})
 vim.keymap.set('n', '<leader>jc', '<cmd>Jira issue create<cr>', {})
+vim.keymap.set('n', '<leader>jt', require("jira.pickers.telescope").transitions, {}) -- Telescope
+vim.keymap.set('n', '<leader>jt', require("jira.pickers.snacks").transitions, {}) -- Snacks
 ```
